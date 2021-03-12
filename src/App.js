@@ -1,24 +1,20 @@
-import logo from './logo.svg';
 import './App.css';
+import { Router, Route } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+import { Provider } from 'mobx-react';
+import Index from './component/Index/Index'
+import Index1 from './component/Index1/Index1';
+const history = createBrowserHistory();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider>
+      <Router history={history}>
+          <Route path={'/'} component={Index}>
+              <Route path={'/index1'} component={Index1}/>
+          </Route>
+      </Router>
+    </Provider>
   );
 }
 
