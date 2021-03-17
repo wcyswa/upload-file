@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 
 import { uploadFile } from "../../util/request";
 
+const SIZE = 10*1024*1024;
 export default class Index1 extends Component{
 
     constructor(props) {
@@ -13,7 +14,8 @@ export default class Index1 extends Component{
     }
 
     container = {file:null,hash:'',worker:null};
-    data = [];
+    data = [];//本地记录文件切片的上传情况
+    requestList = []
 
     request({url, method = "post", data, headers = {}, onProgress = e => e, requestList}) {
         return new Promise(resolve => {
@@ -40,7 +42,7 @@ export default class Index1 extends Component{
     }
 
     // 生成切片文件
-    createFileChunk(file,size=10*1024*1024){
+    createFileChunk(file,size=SIZE){
         const fileChunkList = [];
         let curSize = 0;
         while (curSize < file.size){
@@ -70,17 +72,61 @@ export default class Index1 extends Component{
         return JSON.parse(data);
     }
 
+    // 上传切片，同时过滤已上传的切片
+    async uploadChunks(uploadedList = []){
+        console.log(this.data,'所有切片')
+        const requestList = this.data.filter(({hash})=>!uploadedList.includes(hash)).map(({chunk,hash,index})=>{
+            const formData = new FormData();
+            formData.append('chunk',chunk);
+            formData.append('hash',hash);
+            formData.append('filename',this.container.file.name);
+            formData.append('fileHash',this.container.hash);
+            return {formData,index}
+        }).map(async ({formData,index})=>{
+            await this.request({
+                url:'http://localhost:3001',
+                data:formData,
+                requestList:this.requestList
+            })
+        });
+        await Promise.all(requestList);
+        //之前上传的切片数量+本次上传的切片数量 = 所有切片
+        // 合并切片
+        if(uploadedList.length+requestList.length === this.data.length){
+            await this.mergeRequest();
+        }
+    }
+
+    // 通知服务器合并切片
+    async mergeRequest(){
+        await this.request({
+            url:'http://localhost:3001/merge',
+            headers:{
+                'content-type':'application/json'
+            },
+            data:JSON.stringify({
+                size:SIZE,
+                fileHash:this.container.hash,
+                filename:this.container.file.name
+            })
+        })
+        alert('上传成功')
+    }
+
     onUpload=async ()=>{
         const fileList = this.myFile.current.files;
         if(!fileList.length){
             alert('请选择文件')
         }
         // 生成切片文件，获取切片数组
-        const fileChunkList = this.createFileChunk(fileList);
+        const fileChunkList = this.createFileChunk(fileList[0]);
+        console.log(fileChunkList,'切片后的文件',this.container)
+        // 整个大文件生成hash
+        // this.container.hash = await this.calculateHash(fileChunkList); // md5调用失败
+        this.container.file = fileList[0];
+        this.container.hash = 'testwcyswallow';
 
-        // 生成hash
-        this.container.hash = await this.calculateHash(fileChunkList);
-
+        // 根据文件名跟hash（通过文件内容生成，值唯一标识文件本身）值验证服务器是否已经存在
         const { shouldUpload, uploadedList } = await this.verifyUpload(this.container.file.name, this.container.hash);
         if(!shouldUpload){
             alert('秒传：上传成功')

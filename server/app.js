@@ -9,7 +9,6 @@ const server = http.createServer();
 const controller = new Controller();
 
 server.on("request", async (req, res) => {
-    console.log('@@@@@@@@@@',req)
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Headers", "*");
     if (req.method === "OPTIONS") {
@@ -28,7 +27,6 @@ server.on("request", async (req, res) => {
     }
 
     if (req.url === "/") {
-        console.log('结果')
         await controller.handleFormData(req, res);
     }
 });
