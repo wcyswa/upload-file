@@ -12,6 +12,7 @@ export default class Index extends Component{
                 <ul>
                     <li>
                         <Link to='/index1'>文件上传</Link>
+                        <Link to='/index2'>跨域</Link>
                     </li>
                 </ul>
             </div>

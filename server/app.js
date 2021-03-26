@@ -9,8 +9,8 @@ const server = http.createServer();
 const controller = new Controller();
 
 server.on("request", async (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Headers", "*");
+    // res.setHeader("Access-Control-Allow-Origin", "*");
+    // res.setHeader("Access-Control-Allow-Headers", "*");
     if (req.method === "OPTIONS") {
         res.status = 200;
         res.end();
@@ -23,6 +23,14 @@ server.on("request", async (req, res) => {
 
     if (req.url === "/merge") {
         await controller.handleMerge(req, res);
+        return;
+    }
+
+    if(req.url === '/say'){
+        console.log('服务器')
+        const {wd, callback} = req;
+        res.end(`${callback}('我不爱你')`)
+        console.log(req.url);
         return;
     }
 
