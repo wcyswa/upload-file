@@ -21,3 +21,8 @@ multiparty 处理formData
 start:
 npm start 启动前端服务
 node server/app.js 启动后端服务
+
+
+less 
+将less文件编译为css文件，不能直接less文件
+注意：https://github.com/ljianshu/Blog

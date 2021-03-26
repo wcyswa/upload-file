@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>less</title>
+    <link type="text/css" rel="stylesheet/less" href="./component/common/index.css">
 </head>
 <body>
-$END$
+<header>
+    <p class="header">Hello World!fdsaf</p>
+    <ul class="list">
+        <li>测试</li>
+    </ul>
+</header>
+<script charset="utf-8" type="text/javascript">
+    //->在引入LESS之前设置一个全局的变量less,配置一些参数值(根据情况自行选择需要配置的项)
+    var less = {
+        //->env:设置运行的环境(生产模式还是开发模式)
+        //production:编译后的CSS缓存到本地localStorage中
+        //development:没有把编译后的CSS缓存到本地,在URL不是标准的格式下(例如:file://...),自动设置为development
+        env: "development",
+        //->poll:在监视模式下，每两次请求之间的时间间隔(ms)
+        poll:500
+    }
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.8.1/less.min.js" ></script>
+<script charset="utf-8" type="text/javascript">
+    //->启用监视模式(env必须要设置成development)
+    less.watch();
+</script>
 </body>
 </html>

@@ -1,0 +1,82 @@
+
+// less 语法分为几个方面：变量、混合（mixins）、嵌套、运算、函数、作用域
+// 1.用@定义变量
+@blue:#14a7ed;
+@size:24px;
+.header{
+  color: @blue;
+  font-size: @size;
+}
+// 除了存储公用的属性值，还可以用变量存储公用的URL，选择器等
+
+.@{selector}{
+  @{property}:pink;
+}
+@selector:header;
+@property:color;
+
+// 2.混合
+// 2.1基本使用
+// 可以简单将class A轻松的引入到另一个class B,实现class B继承class A的所有属性，也可以带参数调用，像使用函数一样
+// 缺点：查看css文件，public代码出现冗余
+.public{
+  width: 100px;
+  height: 38px;
+}
+ul{
+  .public;
+  list-style: none;
+}
+
+// 在public后面加上()就可以不编译这个样式
+.public(){
+  width: 100px;
+  height: 38px;
+}
+ul{
+  .public;
+  list-style: none;
+}
+
+// 2.2 extend 上述的继承是把public中的样式copy过来一份，这样编译后css中依然有大量的冗余代码。和原来的选择器共用一套，但要保证原来的不加括号
+.common{
+  width: 100px;
+  height: 38px;
+  font-size: 23px;
+}
+ul{
+  &:extend(.common);
+  color: green;
+  list-style: none;
+}
+
+// 3.嵌套规则 可以在选择器中
+.list{
+  line-height: 38px;
+  li{
+    font-size: 38px;
+    color: green;
+    &:hover{
+      color: red;
+    }
+  }
+}
+
+// 4.函数&运算  提供了加减乘除，可以做属性值和颜色的运算。less中的函数---映射js代码，愿意的话可以直接操作属性值
+@base: 5%;
+@filter: @base *2;
+@color: #888/4;
+.list{
+  background: @color;
+}
+
+// 5.命名空间和作用域
+@var:red;
+.list{
+  @var:yellow;
+  background: @var;
+}
+
+.header{
+  color: @var;
+}
